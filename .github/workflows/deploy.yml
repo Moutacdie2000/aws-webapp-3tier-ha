@@ -1,0 +1,98 @@
+# =============================================================================
+# Déploiement — infrastructure Terraform puis redéploiement du service ECS.
+#
+# Déclenché manuellement (workflow_dispatch) ou après un push réussi sur main.
+# Authentification AWS par OIDC. Le backend Terraform (S3 + DynamoDB) est
+# fourni via des secrets pour ne rien coder en dur dans le dépôt.
+# =============================================================================
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Tag d'image à déployer (SHA de commit ou 'latest')"
+        required: true
+        default: latest
+  push:
+    branches: [main]
+    paths:
+      - "terraform/**"
+      - ".github/workflows/deploy.yml"
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  AWS_REGION: eu-west-3
+  TF_VERSION: "1.9.5"
+  WORKING_DIR: terraform
+
+jobs:
+  terraform:
+    name: Terraform plan & apply
+    runs-on: ubuntu-latest
+    # Le déploiement réel passe par un environnement protégé (revue manuelle).
+    environment: dev
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIR }}
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v4
+
+      - name: Authentification AWS via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Installation de Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform fmt (vérification)
+        run: terraform fmt -check -recursive
+
+      - name: Terraform init
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
+            -backend-config="key=02-webapp-3tier-ha/terraform.tfstate" \
+            -backend-config="region=${{ env.AWS_REGION }}" \
+            -backend-config="dynamodb_table=${{ secrets.TF_LOCK_TABLE }}"
+
+      - name: Terraform validate
+        run: terraform validate
+
+      - name: Terraform plan
+        run: |
+          terraform plan -input=false -out=tfplan \
+            -var="image_tag=${{ github.event.inputs.image_tag || github.sha }}" \
+            -var="alb_certificate_arn=${{ secrets.ALB_CERTIFICATE_ARN }}"
+
+      - name: Terraform apply
+        run: terraform apply -input=false -auto-approve tfplan
+
+      - name: Récupération des sorties (cluster / service)
+        id: tf
+        run: |
+          echo "cluster=$(terraform output -raw ecs_cluster_name)" >> "$GITHUB_OUTPUT"
+          echo "service=$(terraform output -raw ecs_service_name)" >> "$GITHUB_OUTPUT"
+
+      - name: Redéploiement du service ECS
+        run: |
+          aws ecs update-service \
+            --cluster "${{ steps.tf.outputs.cluster }}" \
+            --service "${{ steps.tf.outputs.service }}" \
+            --force-new-deployment \
+            --region "${{ env.AWS_REGION }}"
+
+      - name: Attente de la stabilisation du service
+        run: |
+          aws ecs wait services-stable \
+            --cluster "${{ steps.tf.outputs.cluster }}" \
+            --services "${{ steps.tf.outputs.service }}" \
+            --region "${{ env.AWS_REGION }}"
