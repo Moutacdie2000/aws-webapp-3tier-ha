@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Démo 3-tiers HA</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card: #161b22;
+      --accent: #ff9900;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --ok: #3fb950;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 2.5rem 3rem;
+      max-width: 640px;
+      width: 90%;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    }
+    h1 { margin: 0 0 .25rem; font-size: 1.8rem; }
+    h1 .badge { color: var(--accent); }
+    p.lead { color: var(--muted); margin-top: 0; }
+    .tiers {
+      display: flex;
+      gap: .5rem;
+      margin: 1.5rem 0;
+      flex-wrap: wrap;
+    }
+    .tier {
+      flex: 1 1 150px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: .75rem 1rem;
+      text-align: center;
+      font-size: .9rem;
+    }
+    .tier span { display: block; color: var(--accent); font-weight: 600; margin-bottom: .2rem; }
+    dl { display: grid; grid-template-columns: max-content 1fr; gap: .4rem 1rem; margin: 1.5rem 0 0; font-size: .9rem; }
+    dt { color: var(--muted); }
+    dd { margin: 0; font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; }
+    .links { margin-top: 1.5rem; display: flex; gap: .75rem; }
+    .links a {
+      color: var(--text);
+      text-decoration: none;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: .4rem .9rem;
+      font-size: .85rem;
+      transition: border-color .15s;
+    }
+    .links a:hover { border-color: var(--accent); }
+    .status { color: var(--ok); }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>Démo 3-tiers <span class="badge">HA</span></h1>
+    <p class="lead">Application web haute disponibilité sur AWS, déployée 100&nbsp;% par Infrastructure as Code.</p>
+
+    <div class="tiers">
+      <div class="tier"><span>Tier 1</span>CloudFront + ALB</div>
+      <div class="tier"><span>Tier 2</span>ECS Fargate</div>
+      <div class="tier"><span>Tier 3</span>RDS PostgreSQL</div>
+    </div>
+
+    <dl>
+      <dt>Statut</dt><dd class="status">en ligne</dd>
+      <dt>Version</dt><dd>{{ version }}</dd>
+      <dt>Région</dt><dd>{{ region }}</dd>
+      <dt>Tâche (hostname)</dt><dd>{{ hostname }}</dd>
+    </dl>
+
+    <div class="links">
+      <a href="/health">/health</a>
+      <a href="/db">/db</a>
+    </div>
+  </main>
+</body>
+</html>
