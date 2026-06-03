@@ -8,17 +8,13 @@
 name: Deploy
 
 on:
+  # Déploiement à déclenchement manuel (Actions → « Run workflow »).
   workflow_dispatch:
     inputs:
       image_tag:
         description: "Tag d'image à déployer (SHA de commit ou 'latest')"
         required: true
         default: latest
-  push:
-    branches: [main]
-    paths:
-      - "terraform/**"
-      - ".github/workflows/deploy.yml"
 
 permissions:
   contents: read

@@ -7,16 +7,9 @@
 name: CI
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "app/**"
-      - ".github/workflows/ci.yml"
-  pull_request:
-    branches: [main]
-    paths:
-      - "app/**"
-      - ".github/workflows/ci.yml"
+  # Pipeline à déclenchement manuel (Actions → « Run workflow »).
+  # Le push d'image vers ECR cible un vrai compte AWS via OIDC.
+  workflow_dispatch:
 
 # Permissions minimales : lecture du dépôt + émission du jeton OIDC.
 permissions:
