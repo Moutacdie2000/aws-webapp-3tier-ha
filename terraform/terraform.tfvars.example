@@ -1,0 +1,50 @@
+# =============================================================================
+# Exemple de fichier de variables — copier en terraform.tfvars et adapter.
+#   cp terraform.tfvars.example terraform.tfvars
+# Ne JAMAIS committer terraform.tfvars (déjà ignoré par .gitignore).
+# =============================================================================
+
+project_name = "webapp-3tier"
+environment  = "dev"
+aws_region   = "eu-west-3"
+
+availability_zones = ["eu-west-3a", "eu-west-3b"]
+vpc_cidr           = "10.20.0.0/16"
+
+# Mettre à true en dev pour n'utiliser qu'une seule NAT Gateway (économie ~32 $/mois).
+# Laisser à false en production pour conserver la HA inter-AZ.
+single_nat_gateway = false
+
+# --- Certificats & DNS ---
+# ARN d'un certificat ACM valide dans la région de l'ALB (ci-dessus).
+alb_certificate_arn = "arn:aws:acm:eu-west-3:111122223333:certificate/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+
+# Certificat ACM pour CloudFront — DOIT être dans us-east-1.
+# Laisser vide ("") pour utiliser le certificat *.cloudfront.net par défaut.
+cloudfront_certificate_arn = ""
+
+# Domaine applicatif et zone Route 53 (laisser vides pour ne pas créer d'enregistrement).
+domain_name        = ""
+route53_zone_id    = ""
+cloudfront_aliases = []
+
+# --- Tier applicatif ---
+app_port      = 8000
+image_tag     = "latest"
+task_cpu      = 256
+task_memory   = 512
+desired_count = 2
+min_capacity  = 2
+max_capacity  = 6
+
+# --- Tier données ---
+db_name                = "appdb"
+db_username            = "appuser"
+db_instance_class      = "db.t4g.micro"
+db_multi_az            = true
+db_deletion_protection = false
+
+# --- Observabilité ---
+# Adresse e-mail abonnée aux alarmes (laisser vide pour désactiver SNS).
+alarm_email        = ""
+log_retention_days = 30
