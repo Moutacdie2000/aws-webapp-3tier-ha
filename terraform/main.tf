@@ -1,5 +1,5 @@
 # =============================================================================
-# Racine — câblage des modules de l'application 3-tiers haute disponibilité.
+# Racine, câblage des modules de l'application 3-tiers haute disponibilité.
 #
 # Chaîne de dépendances :
 #   network → alb / rds → ecs (consomme l'ALB et la DB) ; cdn est indépendant.
@@ -22,7 +22,7 @@ locals {
 }
 
 # -----------------------------------------------------------------------------
-# SNS — canal de notification des alarmes CloudWatch (optionnel).
+# SNS, canal de notification des alarmes CloudWatch (optionnel).
 # -----------------------------------------------------------------------------
 resource "aws_sns_topic" "alarms" {
   count = var.alarm_email == "" ? 0 : 1
@@ -38,7 +38,7 @@ resource "aws_sns_topic_subscription" "alarms_email" {
 }
 
 # -----------------------------------------------------------------------------
-# Module réseau — fondation multi-AZ (VPC, subnets, IGW, NAT, routes).
+# Module réseau, fondation multi-AZ (VPC, subnets, IGW, NAT, routes).
 # -----------------------------------------------------------------------------
 module "network" {
   source = "./modules/network"
@@ -54,7 +54,7 @@ module "network" {
 }
 
 # -----------------------------------------------------------------------------
-# Module ALB — point d'entrée HTTPS du tier applicatif.
+# Module ALB, point d'entrée HTTPS du tier applicatif.
 # -----------------------------------------------------------------------------
 module "alb" {
   source = "./modules/alb"
@@ -71,7 +71,7 @@ module "alb" {
 }
 
 # -----------------------------------------------------------------------------
-# Module RDS — tier données PostgreSQL Multi-AZ.
+# Module RDS, tier données PostgreSQL Multi-AZ.
 # La règle d'ingress reliant le SG des tâches ECS au SG de la base est définie
 # plus bas (aws_vpc_security_group_ingress_rule.rds_from_ecs) pour éviter un
 # cycle de modules : le module ecs dépend déjà des sorties de rds.
@@ -105,7 +105,7 @@ resource "aws_vpc_security_group_ingress_rule" "rds_from_ecs" {
 }
 
 # -----------------------------------------------------------------------------
-# Module ECS — tier applicatif Fargate auto-scalé.
+# Module ECS, tier applicatif Fargate auto-scalé.
 # Consomme l'ALB (target group + SG) et la DB (endpoint + secret + clé KMS).
 # -----------------------------------------------------------------------------
 module "ecs" {
@@ -137,7 +137,7 @@ module "ecs" {
 }
 
 # -----------------------------------------------------------------------------
-# Module CDN — bucket S3 (OAC) + CloudFront pour les assets statiques.
+# Module CDN, bucket S3 (OAC) + CloudFront pour les assets statiques.
 # -----------------------------------------------------------------------------
 module "cdn" {
   source = "./modules/cdn"
@@ -151,7 +151,7 @@ module "cdn" {
 }
 
 # -----------------------------------------------------------------------------
-# Route 53 — alias du domaine applicatif vers l'ALB (optionnel).
+# Route 53, alias du domaine applicatif vers l'ALB (optionnel).
 # Créé uniquement si un domaine ET une zone hébergée sont fournis.
 # -----------------------------------------------------------------------------
 resource "aws_route53_record" "app" {

@@ -10,7 +10,7 @@
 # =============================================================================
 
 # -----------------------------------------------------------------------------
-# Clé KMS — chiffre l'instance RDS et le secret de connexion.
+# Clé KMS, chiffre l'instance RDS et le secret de connexion.
 # -----------------------------------------------------------------------------
 resource "aws_kms_key" "rds" {
   description             = "Chiffrement RDS et secret DB pour ${var.name_prefix}"
@@ -28,7 +28,7 @@ resource "aws_kms_alias" "rds" {
 }
 
 # -----------------------------------------------------------------------------
-# Mot de passe maître — généré aléatoirement et jamais exposé en clair dans l'état.
+# Mot de passe maître, généré aléatoirement et jamais exposé en clair dans l'état.
 # -----------------------------------------------------------------------------
 resource "random_password" "db" {
   length = 24
@@ -38,7 +38,7 @@ resource "random_password" "db" {
 }
 
 # -----------------------------------------------------------------------------
-# Secret Secrets Manager — JSON { username, password, host, port, dbname }.
+# Secret Secrets Manager, JSON { username, password, host, port, dbname }.
 # Consommé par la task definition ECS (clés username/password).
 # -----------------------------------------------------------------------------
 resource "aws_secretsmanager_secret" "db" {
@@ -65,7 +65,7 @@ resource "aws_secretsmanager_secret_version" "db" {
 }
 
 # -----------------------------------------------------------------------------
-# Subnet group — répartit l'instance sur les sous-réseaux "data" des 2 AZ.
+# Subnet group, répartit l'instance sur les sous-réseaux "data" des 2 AZ.
 # -----------------------------------------------------------------------------
 resource "aws_db_subnet_group" "this" {
   name       = "${var.name_prefix}-db-subnet-group"
@@ -77,7 +77,7 @@ resource "aws_db_subnet_group" "this" {
 }
 
 # -----------------------------------------------------------------------------
-# Security Group de la base — n'autorise QUE le SG des tâches ECS sur 5432.
+# Security Group de la base, n'autorise QUE le SG des tâches ECS sur 5432.
 #
 # La règle d'ingress qui référence le SG des tâches ECS est définie à la racine
 # (et non ici) afin d'éviter un cycle de dépendances entre les modules ecs et
@@ -95,7 +95,7 @@ resource "aws_security_group" "rds" {
 }
 
 # -----------------------------------------------------------------------------
-# Groupe de paramètres — force le SSL en transit côté serveur.
+# Groupe de paramètres, force le SSL en transit côté serveur.
 # -----------------------------------------------------------------------------
 resource "aws_db_parameter_group" "this" {
   name        = "${var.name_prefix}-pg"
@@ -115,7 +115,7 @@ resource "aws_db_parameter_group" "this" {
 }
 
 # -----------------------------------------------------------------------------
-# Instance RDS PostgreSQL — Multi-AZ pour la haute disponibilité.
+# Instance RDS PostgreSQL, Multi-AZ pour la haute disponibilité.
 # -----------------------------------------------------------------------------
 resource "aws_db_instance" "this" {
   identifier     = "${var.name_prefix}-postgres"
@@ -200,7 +200,7 @@ resource "aws_iam_role_policy_attachment" "rds_monitoring" {
 }
 
 # -----------------------------------------------------------------------------
-# Alarme CloudWatch — espace disque libre faible.
+# Alarme CloudWatch, espace disque libre faible.
 # -----------------------------------------------------------------------------
 resource "aws_cloudwatch_metric_alarm" "low_storage" {
   alarm_name          = "${var.name_prefix}-rds-low-storage"

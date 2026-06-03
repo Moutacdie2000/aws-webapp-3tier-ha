@@ -1,4 +1,4 @@
-# ADR 0002 — RDS PostgreSQL en Multi-AZ et stratégie de bascule
+# ADR 0002, RDS PostgreSQL en Multi-AZ et stratégie de bascule
 
 - **Statut :** Accepté
 - **Date :** 2026-06-03
@@ -12,9 +12,9 @@ la perte d'une zone de disponibilité (AZ) du reste de l'architecture.
 
 Options envisagées :
 
-1. **RDS PostgreSQL — instance unique (Single-AZ).**
-2. **RDS PostgreSQL — Multi-AZ « instance de secours » (1 standby).**
-3. **RDS PostgreSQL — Multi-AZ « cluster » (2 standbys lisibles, Multi-AZ DB
+1. **RDS PostgreSQL, instance unique (Single-AZ).**
+2. **RDS PostgreSQL, Multi-AZ « instance de secours » (1 standby).**
+3. **RDS PostgreSQL, Multi-AZ « cluster » (2 standbys lisibles, Multi-AZ DB
    Cluster).**
 4. **Amazon Aurora PostgreSQL-compatible.**
 
@@ -34,7 +34,7 @@ transit, et Enhanced Monitoring + Performance Insights pour l'observabilité.
 |---------|-----------|----------------------|------------------|--------|
 | Tolérance à la perte d'une AZ | ❌ | ✅ | ✅ | ✅ |
 | Bascule automatique | ❌ | ✅ (60–120 s) | ✅ (plus rapide) | ✅ |
-| Réplicas en lecture inclus | — | Non | 2 (lisibles) | Oui |
+| Réplicas en lecture inclus |, | Non | 2 (lisibles) | Oui |
 | Compatibilité PostgreSQL standard | ✅ | ✅ | ✅ | ✅ (compatible) |
 | Coût | € | €€ | €€€ | €€€ |
 | Complexité | Faible | **Faible** | Moyenne | Moyenne |
@@ -55,8 +55,8 @@ Arguments pour le **Multi-AZ standby** :
 ### Mécanisme
 
 L'instance primaire réplique de façon **synchrone** vers le standby (autre AZ).
-En cas d'incident sur la primaire — défaillance matérielle, indisponibilité de
-l'AZ, ou opération de maintenance/patch — RDS **promeut automatiquement** le
+En cas d'incident sur la primaire, défaillance matérielle, indisponibilité de
+l'AZ, ou opération de maintenance/patch, RDS **promeut automatiquement** le
 standby et **repointe le nom DNS du point de terminaison** vers la nouvelle
 primaire. Durée typique : **60 à 120 secondes**.
 
@@ -76,7 +76,7 @@ primaire. Durée typique : **60 à 120 secondes**.
 
 - **Automatique** sur incident réel ou perte d'AZ.
 - **Manuel** pour validation : un `reboot` avec l'option *failover* force une
-  bascule contrôlée (`aws rds reboot-db-instance --force-failover`) — voir la
+  bascule contrôlée (`aws rds reboot-db-instance --force-failover`), voir la
   section « Tests & validation » du README.
 
 ## Conséquences

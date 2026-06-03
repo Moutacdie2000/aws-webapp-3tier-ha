@@ -13,7 +13,7 @@
 data "aws_region" "current" {}
 
 # -----------------------------------------------------------------------------
-# Dépôt ECR — héberge l'image Docker du tier applicatif.
+# Dépôt ECR, héberge l'image Docker du tier applicatif.
 # -----------------------------------------------------------------------------
 resource "aws_ecr_repository" "app" {
   name                 = "${var.name_prefix}-app"
@@ -52,7 +52,7 @@ resource "aws_ecr_lifecycle_policy" "app" {
 }
 
 # -----------------------------------------------------------------------------
-# Security Group des tâches — n'accepte le trafic QUE depuis l'ALB.
+# Security Group des tâches, n'accepte le trafic QUE depuis l'ALB.
 # -----------------------------------------------------------------------------
 resource "aws_security_group" "ecs_tasks" {
   name        = "${var.name_prefix}-ecs-tasks-sg"
@@ -94,7 +94,7 @@ resource "aws_cloudwatch_log_group" "app" {
 }
 
 # -----------------------------------------------------------------------------
-# Rôle d'exécution ECS — utilisé par l'agent Fargate (pull ECR, logs, secrets).
+# Rôle d'exécution ECS, utilisé par l'agent Fargate (pull ECR, logs, secrets).
 # -----------------------------------------------------------------------------
 resource "aws_iam_role" "execution" {
   name = "${var.name_prefix}-ecs-execution"
@@ -139,7 +139,7 @@ resource "aws_iam_role_policy" "execution_secrets" {
 }
 
 # -----------------------------------------------------------------------------
-# Rôle de tâche — identité applicative à l'exécution (séparé du rôle d'exécution).
+# Rôle de tâche, identité applicative à l'exécution (séparé du rôle d'exécution).
 # Minimaliste ici : l'application n'appelle aucune API AWS au runtime.
 # -----------------------------------------------------------------------------
 resource "aws_iam_role" "task" {
@@ -158,7 +158,7 @@ resource "aws_iam_role" "task" {
 }
 
 # -----------------------------------------------------------------------------
-# Cluster ECS — Container Insights activé pour l'observabilité.
+# Cluster ECS, Container Insights activé pour l'observabilité.
 # -----------------------------------------------------------------------------
 resource "aws_ecs_cluster" "this" {
   name = "${var.name_prefix}-cluster"
@@ -248,7 +248,7 @@ resource "aws_ecs_task_definition" "app" {
 }
 
 # -----------------------------------------------------------------------------
-# Service ECS — réparti sur les sous-réseaux applicatifs des 2 AZ.
+# Service ECS, réparti sur les sous-réseaux applicatifs des 2 AZ.
 # -----------------------------------------------------------------------------
 resource "aws_ecs_service" "app" {
   name            = "${var.name_prefix}-app"
@@ -295,7 +295,7 @@ resource "aws_ecs_service" "app" {
 }
 
 # -----------------------------------------------------------------------------
-# Autoscaling applicatif — suivi de cible sur l'utilisation CPU moyenne.
+# Autoscaling applicatif, suivi de cible sur l'utilisation CPU moyenne.
 # -----------------------------------------------------------------------------
 resource "aws_appautoscaling_target" "ecs" {
   max_capacity       = var.max_capacity
@@ -323,7 +323,7 @@ resource "aws_appautoscaling_policy" "cpu" {
 }
 
 # -----------------------------------------------------------------------------
-# Alarme CloudWatch — CPU élevé soutenu (complète l'autoscaling, alerte SRE).
+# Alarme CloudWatch, CPU élevé soutenu (complète l'autoscaling, alerte SRE).
 # -----------------------------------------------------------------------------
 resource "aws_cloudwatch_metric_alarm" "high_cpu" {
   alarm_name          = "${var.name_prefix}-ecs-high-cpu"

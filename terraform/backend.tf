@@ -1,5 +1,5 @@
 # =============================================================================
-# Backend distant — état Terraform dans S3 avec verrouillage DynamoDB.
+# Backend distant, état Terraform dans S3 avec verrouillage DynamoDB.
 #
 # Les valeurs (bucket, table, clé) sont volontairement laissées vides ici et
 # fournies à l'initialisation via un fichier de backend ou des options -backend-config :

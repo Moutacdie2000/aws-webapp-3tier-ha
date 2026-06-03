@@ -30,7 +30,7 @@ resource "aws_vpc" "this" {
 }
 
 # -----------------------------------------------------------------------------
-# Internet Gateway — point de sortie/entrée des sous-réseaux publics.
+# Internet Gateway, point de sortie/entrée des sous-réseaux publics.
 # -----------------------------------------------------------------------------
 resource "aws_internet_gateway" "this" {
   vpc_id = aws_vpc.this.id
@@ -57,7 +57,7 @@ resource "aws_subnet" "public" {
 }
 
 # -----------------------------------------------------------------------------
-# Sous-réseaux applicatifs (un par AZ) — privés, sortie via NAT.
+# Sous-réseaux applicatifs (un par AZ), privés, sortie via NAT.
 # -----------------------------------------------------------------------------
 resource "aws_subnet" "app" {
   count             = length(var.availability_zones)
@@ -72,7 +72,7 @@ resource "aws_subnet" "app" {
 }
 
 # -----------------------------------------------------------------------------
-# Sous-réseaux données (un par AZ) — privés, sans route vers Internet.
+# Sous-réseaux données (un par AZ), privés, sans route vers Internet.
 # -----------------------------------------------------------------------------
 resource "aws_subnet" "data" {
   count             = length(var.availability_zones)
@@ -87,7 +87,7 @@ resource "aws_subnet" "data" {
 }
 
 # -----------------------------------------------------------------------------
-# NAT Gateways — un par AZ pour la haute disponibilité (pas de SPOF inter-AZ).
+# NAT Gateways, un par AZ pour la haute disponibilité (pas de SPOF inter-AZ).
 # Lorsque single_nat_gateway = true, une seule NAT est créée (économie en dev).
 # -----------------------------------------------------------------------------
 locals {
@@ -119,7 +119,7 @@ resource "aws_nat_gateway" "this" {
 }
 
 # -----------------------------------------------------------------------------
-# Table de routage publique — route par défaut vers l'IGW, partagée par les AZ.
+# Table de routage publique, route par défaut vers l'IGW, partagée par les AZ.
 # -----------------------------------------------------------------------------
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.this.id
@@ -143,7 +143,7 @@ resource "aws_route_table_association" "public" {
 }
 
 # -----------------------------------------------------------------------------
-# Tables de routage applicatives — une par AZ, route par défaut via la NAT
+# Tables de routage applicatives, une par AZ, route par défaut via la NAT
 # locale (ou la NAT unique en mode économique).
 # -----------------------------------------------------------------------------
 resource "aws_route_table" "app" {
@@ -171,7 +171,7 @@ resource "aws_route_table_association" "app" {
 }
 
 # -----------------------------------------------------------------------------
-# Table de routage données — purement interne au VPC (aucune route 0.0.0.0/0).
+# Table de routage données, purement interne au VPC (aucune route 0.0.0.0/0).
 # -----------------------------------------------------------------------------
 resource "aws_route_table" "data" {
   vpc_id = aws_vpc.this.id
@@ -189,7 +189,7 @@ resource "aws_route_table_association" "data" {
 }
 
 # -----------------------------------------------------------------------------
-# VPC Flow Logs — traçabilité réseau vers CloudWatch (observabilité/sécurité).
+# VPC Flow Logs, traçabilité réseau vers CloudWatch (observabilité/sécurité).
 # -----------------------------------------------------------------------------
 resource "aws_cloudwatch_log_group" "flow_logs" {
   name              = "/vpc/${var.name_prefix}/flow-logs"

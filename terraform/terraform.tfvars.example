@@ -1,5 +1,5 @@
 # =============================================================================
-# Exemple de fichier de variables — copier en terraform.tfvars et adapter.
+# Exemple de fichier de variables, copier en terraform.tfvars et adapter.
 #   cp terraform.tfvars.example terraform.tfvars
 # Ne JAMAIS committer terraform.tfvars (déjà ignoré par .gitignore).
 # =============================================================================
@@ -19,7 +19,7 @@ single_nat_gateway = false
 # ARN d'un certificat ACM valide dans la région de l'ALB (ci-dessus).
 alb_certificate_arn = "arn:aws:acm:eu-west-3:111122223333:certificate/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
 
-# Certificat ACM pour CloudFront — DOIT être dans us-east-1.
+# Certificat ACM pour CloudFront, DOIT être dans us-east-1.
 # Laisser vide ("") pour utiliser le certificat *.cloudfront.net par défaut.
 cloudfront_certificate_arn = ""
 

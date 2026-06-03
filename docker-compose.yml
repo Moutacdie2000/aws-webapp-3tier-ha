@@ -1,5 +1,5 @@
 # =============================================================================
-# Pile de développement local — reproduit les tiers applicatif + données.
+# Pile de développement local, reproduit les tiers applicatif + données.
 #
 #   docker compose up --build
 #   → application sur http://localhost:8000

@@ -1,6 +1,6 @@
 # 🌐 Application web 3-tiers haute disponibilité sur AWS
 
-_L'architecture de référence AWS Well-Architected — VPC multi-AZ, ALB, ECS Fargate et RDS PostgreSQL Multi-AZ — déployée et détruite à 100 % par Infrastructure as Code et CI/CD._
+_L'architecture de référence AWS Well-Architected, VPC multi-AZ, ALB, ECS Fargate et RDS PostgreSQL Multi-AZ, déployée et détruite à 100 % par Infrastructure as Code et CI/CD._
 
 ![Terraform](https://img.shields.io/badge/IaC-Terraform-844FBA?logo=terraform&logoColor=white)
 ![AWS ECS](https://img.shields.io/badge/AWS-ECS%20Fargate-FF9900?logo=amazonecs&logoColor=white)
@@ -102,10 +102,10 @@ depuis **Secrets Manager**.
 
 **Haute disponibilité :**
 
-- **Multi-AZ** — réseau, tâches applicatives et base sont dupliqués sur 2 AZ.
-- **Autoscaling** — le service ECS suit une cible d'utilisation CPU (60 %) et
+- **Multi-AZ**, réseau, tâches applicatives et base sont dupliqués sur 2 AZ.
+- **Autoscaling**, le service ECS suit une cible d'utilisation CPU (60 %) et
   ajuste le nombre de tâches (min 2, max 6).
-- **Bascule RDS** — un standby synchrone est promu automatiquement en 60–120 s
+- **Bascule RDS**, un standby synchrone est promu automatiquement en 60–120 s
   si la primaire tombe ; le point de terminaison DNS est repointé de façon
   transparente (voir [ADR 0002](./docs/adr/0002-rds-multi-az.md)).
 
@@ -183,7 +183,7 @@ depuis **Secrets Manager**.
 | [AWS CLI](https://aws.amazon.com/cli/) | ≥ 2.x | Authentification, déploiement ECS, tests |
 | [Docker](https://docs.docker.com/get-docker/) | ≥ 24 | Build d'image, exécution locale |
 | [Python](https://www.python.org/) | 3.12 | Lint et tests applicatifs en local |
-| `make` | — | Raccourcis du cycle de vie |
+| `make` |, | Raccourcis du cycle de vie |
 
 Côté AWS :
 
@@ -279,7 +279,7 @@ make docker-stop-local
 ### Multi-AZ de bout en bout
 
 Le module `network` crée, pour **chaque AZ**, un trio de sous-réseaux
-(public/app/data) et une **NAT Gateway dédiée** — aucun point de défaillance
+(public/app/data) et une **NAT Gateway dédiée**, aucun point de défaillance
 inter-AZ. ALB, service ECS et RDS s'étendent sur les 2 AZ.
 
 ### Autoscaling par suivi de cible
@@ -300,7 +300,7 @@ Le module `ecs` attache une politique `TargetTrackingScaling` sur
 
 Le module `rds` génère un mot de passe aléatoire (`random_password`), le stocke
 dans un secret **chiffré KMS**, et la task definition ECS l'injecte via le bloc
-`secrets` (références `valueFrom`) — jamais en variable d'environnement en clair,
+`secrets` (références `valueFrom`), jamais en variable d'environnement en clair,
 jamais dans l'état Terraform exposé.
 
 ### Moindre privilège sur les Security Groups
@@ -326,28 +326,28 @@ RDS est définie à la racine pour éviter un cycle de dépendances entre module
 
 Les alarmes publient sur un **topic SNS** (abonnement e-mail) si `alarm_email`
 est renseigné. Un tableau de bord CloudWatch peut être ajouté pour agréger
-métriques ALB (latence, 5xx), ECS (CPU/mémoire) et RDS (connexions) — voir la
+métriques ALB (latence, 5xx), ECS (CPU/mémoire) et RDS (connexions), voir la
 [Roadmap](#️-roadmap).
 
 ---
 
 ## 🔐 Sécurité
 
-- **Security Groups en moindre privilège** — sources référencées par SG, jamais
+- **Security Groups en moindre privilège**, sources référencées par SG, jamais
   d'ouverture large ; sous-réseaux `data` sans aucune route vers Internet.
-- **Chiffrement au repos** — RDS et secret chiffrés par **clé KMS dédiée**
+- **Chiffrement au repos**, RDS et secret chiffrés par **clé KMS dédiée**
   (rotation activée) ; bucket S3 chiffré (SSE-S3) ; dépôt ECR chiffré.
-- **Chiffrement en transit** — HTTPS sur l'ALB (politique **TLS 1.2/1.3**),
+- **Chiffrement en transit**, HTTPS sur l'ALB (politique **TLS 1.2/1.3**),
   redirection systématique HTTP→HTTPS, `rds.force_ssl = 1` côté base,
   CloudFront en `redirect-to-https`.
-- **Secrets gérés** — identifiants DB dans **Secrets Manager**, injectés au
+- **Secrets gérés**, identifiants DB dans **Secrets Manager**, injectés au
   runtime, jamais commités ni exposés en clair.
-- **Image non-root** — l'image Docker est **multi-stage** (pas d'outils de build
+- **Image non-root**, l'image Docker est **multi-stage** (pas d'outils de build
   dans l'image finale) et s'exécute sous un **utilisateur non privilégié**
   (`uid 10001`).
-- **S3 non public** — *block public access* total ; seul **CloudFront via OAC**
+- **S3 non public**, *block public access* total ; seul **CloudFront via OAC**
   peut lire le bucket (condition sur l'ARN de la distribution).
-- **CI/CD sans clés** — authentification AWS par **OIDC** ; scan d'image
+- **CI/CD sans clés**, authentification AWS par **OIDC** ; scan d'image
   **Trivy** (échec sur CRITICAL/HIGH) ; `scan_on_push` activé sur ECR ;
   images ECR **immutables**.
 
@@ -465,7 +465,7 @@ puis qu'ECS reprogramme la tâche manquante.
 
 - **Infrastructure as Code** modulaire et réutilisable (Terraform, 5 modules).
 - **CI/CD** complète : lint, tests, scan de sécurité (Trivy), build et push
-  d'image, déploiement Terraform — le tout en **OIDC sans secret stocké**.
+  d'image, déploiement Terraform, le tout en **OIDC sans secret stocké**.
 - **Conteneurs** : image Docker multi-stage, non-root, health-checkée.
 - **DevSecOps** : scan d'image, chiffrement systématique, secrets gérés, moindre
   privilège, état chiffré.

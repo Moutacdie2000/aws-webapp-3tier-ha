@@ -17,7 +17,7 @@ terraform {
   }
 }
 
-# Fournisseur principal — région de déploiement de l'infrastructure.
+# Fournisseur principal, région de déploiement de l'infrastructure.
 provider "aws" {
   region = var.aws_region
 

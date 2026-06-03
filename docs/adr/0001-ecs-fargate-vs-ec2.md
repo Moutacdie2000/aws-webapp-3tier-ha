@@ -1,4 +1,4 @@
-# ADR 0001 — ECS Fargate plutôt qu'ECS sur EC2 / Auto Scaling Group
+# ADR 0001, ECS Fargate plutôt qu'ECS sur EC2 / Auto Scaling Group
 
 - **Statut :** Accepté
 - **Date :** 2026-06-03
@@ -11,11 +11,11 @@ hautement disponible, auto-scalé et exploité avec un minimum de charge
 opérationnelle. Trois options de calcul ont été envisagées pour exécuter ces
 conteneurs sur AWS :
 
-1. **ECS sur EC2** — un cluster ECS adossé à un Auto Scaling Group (ASG)
+1. **ECS sur EC2**, un cluster ECS adossé à un Auto Scaling Group (ASG)
    d'instances EC2 que nous gérons.
-2. **ECS sur Fargate** — calcul *serverless* pour conteneurs ; AWS gère les
+2. **ECS sur Fargate**, calcul *serverless* pour conteneurs ; AWS gère les
    hôtes sous-jacents.
-3. **EKS (Kubernetes)** — orchestrateur Kubernetes managé.
+3. **EKS (Kubernetes)**, orchestrateur Kubernetes managé.
 
 EKS est volontairement écarté ici : sa puissance (et sa complexité) est traitée
 dans le **projet 03** du portfolio. Le débat se concentre donc sur **Fargate vs
@@ -33,7 +33,7 @@ et une politique d'autoscaling par suivi de cible sur le CPU.
 
 | Critère | ECS sur EC2 / ASG | **ECS sur Fargate** |
 |---------|-------------------|---------------------|
-| Gestion des hôtes (patchs OS, AMI) | À notre charge | **Aucune — géré par AWS** |
+| Gestion des hôtes (patchs OS, AMI) | À notre charge | **Aucune, géré par AWS** |
 | Surface d'attaque | OS + agent ECS exposés | **Réduite (pas d'hôte à durcir)** |
 | Modèle de coût | Instances payées même sous-utilisées | **Paiement à la tâche/seconde** |
 | Densité / *bin packing* | À optimiser manuellement | Non applicable (1 tâche = ressources dédiées) |
@@ -42,16 +42,16 @@ et une politique d'autoscaling par suivi de cible sur le CPU.
 
 Arguments décisifs pour ce projet :
 
-- **Zéro gestion de serveur** — pas d'AMI à maintenir, pas de cycle de patch
+- **Zéro gestion de serveur**, pas d'AMI à maintenir, pas de cycle de patch
   d'OS, pas de capacité de cluster à dimensionner. C'est l'objectif « 100 % IaC,
   zéro ClickOps, faible charge opérationnelle » du portfolio.
-- **Sécurité** — chaque tâche s'exécute dans un environnement isolé géré par
+- **Sécurité**, chaque tâche s'exécute dans un environnement isolé géré par
   AWS ; il n'y a pas d'hôte EC2 partagé à durcir ni à surveiller.
-- **Coût adapté à une charge variable et modeste** — pour une démo au trafic
+- **Coût adapté à une charge variable et modeste**, pour une démo au trafic
   intermittent, payer à la tâche évite le coût d'instances EC2 allumées en
   permanence. `FARGATE_SPOT` permet d'aller plus loin sur les charges
   tolérantes aux interruptions.
-- **Scalabilité simple** — l'autoscaling agit directement sur le nombre de
+- **Scalabilité simple**, l'autoscaling agit directement sur le nombre de
   tâches, sans avoir à coordonner un ASG d'instances en parallèle.
 
 ## Conséquences

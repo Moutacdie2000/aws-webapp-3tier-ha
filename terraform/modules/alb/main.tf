@@ -9,7 +9,7 @@
 # =============================================================================
 
 # -----------------------------------------------------------------------------
-# Security Group de l'ALB — accepte le trafic web depuis l'extérieur.
+# Security Group de l'ALB, accepte le trafic web depuis l'extérieur.
 # -----------------------------------------------------------------------------
 resource "aws_security_group" "alb" {
   name        = "${var.name_prefix}-alb-sg"
@@ -69,7 +69,7 @@ resource "aws_lb" "this" {
 }
 
 # -----------------------------------------------------------------------------
-# Target group — cible de type "ip" (obligatoire avec le mode réseau awsvpc
+# Target group, cible de type "ip" (obligatoire avec le mode réseau awsvpc
 # de Fargate). Le health check interroge la route /health de l'application.
 # -----------------------------------------------------------------------------
 resource "aws_lb_target_group" "this" {
@@ -109,7 +109,7 @@ resource "aws_lb_target_group" "this" {
 }
 
 # -----------------------------------------------------------------------------
-# Listener HTTP :80 — redirection permanente vers HTTPS.
+# Listener HTTP :80, redirection permanente vers HTTPS.
 # -----------------------------------------------------------------------------
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.this.arn
@@ -130,7 +130,7 @@ resource "aws_lb_listener" "http" {
 }
 
 # -----------------------------------------------------------------------------
-# Listener HTTPS :443 — terminaison TLS via certificat ACM.
+# Listener HTTPS :443, terminaison TLS via certificat ACM.
 # -----------------------------------------------------------------------------
 resource "aws_lb_listener" "https" {
   load_balancer_arn = aws_lb.this.arn

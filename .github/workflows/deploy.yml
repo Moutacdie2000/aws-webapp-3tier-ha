@@ -1,5 +1,5 @@
 # =============================================================================
-# Déploiement — infrastructure Terraform puis redéploiement du service ECS.
+# Déploiement, infrastructure Terraform puis redéploiement du service ECS.
 #
 # Déclenché manuellement (workflow_dispatch) ou après un push réussi sur main.
 # Authentification AWS par OIDC. Le backend Terraform (S3 + DynamoDB) est

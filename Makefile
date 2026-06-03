@@ -1,5 +1,5 @@
 # =============================================================================
-# Makefile — raccourcis pour le développement local et le cycle de vie AWS.
+# Makefile, raccourcis pour le développement local et le cycle de vie AWS.
 # =============================================================================
 
 # Variables surchargeable en ligne de commande : make deploy IMAGE_TAG=abc123
@@ -22,7 +22,7 @@ help: ## Affiche cette aide
 		| awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-22s\033[0m %s\n", $$1, $$2}'
 
 # -----------------------------------------------------------------------------
-# Application — build / test / exécution locale
+# Application, build / test / exécution locale
 # -----------------------------------------------------------------------------
 .PHONY: build
 build: ## Construit l'image Docker de l'application
@@ -49,7 +49,7 @@ docker-stop-local: ## Arrête et supprime la pile locale (avec volumes)
 	docker compose down -v
 
 # -----------------------------------------------------------------------------
-# Infrastructure — Terraform
+# Infrastructure, Terraform
 # -----------------------------------------------------------------------------
 .PHONY: fmt
 fmt: ## Formate les fichiers Terraform
@@ -72,7 +72,7 @@ destroy: ## Détruit toute l'infrastructure (auto-approve)
 	cd $(TF_DIR) && terraform destroy -auto-approve
 
 # -----------------------------------------------------------------------------
-# Déploiement applicatif — push image + redéploiement du service ECS
+# Déploiement applicatif, push image + redéploiement du service ECS
 # -----------------------------------------------------------------------------
 .PHONY: ecr-login
 ecr-login: ## Authentifie Docker auprès d'ECR

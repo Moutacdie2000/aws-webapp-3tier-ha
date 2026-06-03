@@ -1,5 +1,5 @@
 # =============================================================================
-# CI — qualité applicative, scan de sécurité et publication d'image vers ECR.
+# CI, qualité applicative, scan de sécurité et publication d'image vers ECR.
 #
 # L'authentification AWS se fait par OIDC (aucune clé secrète stockée dans
 # GitHub). Le rôle assumé doit faire confiance au fournisseur OIDC GitHub.

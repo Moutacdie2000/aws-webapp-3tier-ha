@@ -49,7 +49,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "assets" {
 }
 
 # -----------------------------------------------------------------------------
-# Origin Access Control (OAC) — remplace l'ancienne OAI, signe les requêtes
+# Origin Access Control (OAC), remplace l'ancienne OAI, signe les requêtes
 # de CloudFront vers S3 en SigV4.
 # -----------------------------------------------------------------------------
 resource "aws_cloudfront_origin_access_control" "assets" {
@@ -112,7 +112,7 @@ resource "aws_cloudfront_distribution" "this" {
 }
 
 # -----------------------------------------------------------------------------
-# Politique de bucket — autorise UNIQUEMENT cette distribution CloudFront
+# Politique de bucket, autorise UNIQUEMENT cette distribution CloudFront
 # (condition sur l'ARN de la distribution) à lire les objets.
 # -----------------------------------------------------------------------------
 data "aws_iam_policy_document" "assets" {

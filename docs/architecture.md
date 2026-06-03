@@ -1,4 +1,4 @@
-# 🏗️ Architecture — Application web 3-tiers haute disponibilité
+# 🏗️ Architecture, Application web 3-tiers haute disponibilité
 
 Ce document détaille l'architecture de référence, le flux d'une requête et les
 mécanismes de haute disponibilité (HA).
@@ -22,7 +22,7 @@ flowchart TB
     user(["👤 Utilisateur"])
     dns["Route 53<br/>app.example.com"]
     cf["CloudFront<br/>(assets statiques)"]
-    s3[("S3<br/>assets — OAC")]
+    s3[("S3<br/>assets, OAC")]
 
     user -->|HTTPS| dns
     dns -->|alias| cf
@@ -39,13 +39,13 @@ flowchart TB
 
         subgraph AZA["Zone de disponibilité A"]
             direction TB
-            appA["ECS Fargate — tâche<br/>(subnet app-a)"]
+            appA["ECS Fargate, tâche<br/>(subnet app-a)"]
             rdsP[("RDS primaire<br/>(subnet data-a)")]
         end
 
         subgraph AZB["Zone de disponibilité B"]
             direction TB
-            appB["ECS Fargate — tâche<br/>(subnet app-b)"]
+            appB["ECS Fargate, tâche<br/>(subnet app-b)"]
             rdsS[("RDS standby<br/>(subnet data-b)")]
         end
 
@@ -68,21 +68,21 @@ flowchart TB
 
 ## Flux d'une requête
 
-1. **Résolution DNS** — l'utilisateur résout `app.example.com` via **Route 53**.
+1. **Résolution DNS**, l'utilisateur résout `app.example.com` via **Route 53**.
    Les assets statiques (`*.cloudfront.net` ou un sous-domaine) pointent vers
    **CloudFront** ; l'application dynamique pointe (alias A) vers l'**ALB**.
-2. **Assets statiques** — **CloudFront** sert les fichiers depuis le bucket
+2. **Assets statiques**, **CloudFront** sert les fichiers depuis le bucket
    **S3** privé via un **Origin Access Control (OAC)** : S3 n'est jamais exposé
    publiquement, seul CloudFront peut le lire.
-3. **Requête applicative** — l'**ALB** termine le TLS (certificat **ACM**,
+3. **Requête applicative**, l'**ALB** termine le TLS (certificat **ACM**,
    politique TLS 1.2/1.3) et redirige systématiquement le port 80 vers 443.
-4. **Routage vers les tâches** — l'ALB répartit la charge sur les tâches
+4. **Routage vers les tâches**, l'ALB répartit la charge sur les tâches
    **ECS Fargate** saines des **deux AZ** (cibles de type `ip`, mode réseau
    `awsvpc`). Le *health check* interroge `/health`.
-5. **Accès aux données** — chaque tâche se connecte au point de terminaison
+5. **Accès aux données**, chaque tâche se connecte au point de terminaison
    **RDS PostgreSQL** (port 5432). Les identifiants sont injectés depuis
-   **Secrets Manager** dans l'environnement du conteneur — jamais en clair.
-6. **Sortie Internet** — pour tirer leur image ECR ou joindre les API AWS, les
+   **Secrets Manager** dans l'environnement du conteneur, jamais en clair.
+6. **Sortie Internet**, pour tirer leur image ECR ou joindre les API AWS, les
    tâches (en sous-réseaux privés) sortent par les **NAT Gateways**, puis par
    l'**Internet Gateway**.
 
@@ -112,7 +112,7 @@ maintenue par **réplication synchrone**. En cas de panne de l'instance primaire
 (défaillance matérielle, perte d'AZ, maintenance), RDS **bascule
 automatiquement** : l'enregistrement DNS du point de terminaison est repointé
 vers le standby promu, généralement en **60 à 120 secondes**. L'application n'a
-pas à changer de chaîne de connexion — elle utilise le nom DNS, pas l'IP. Voir
+pas à changer de chaîne de connexion, elle utilise le nom DNS, pas l'IP. Voir
 l'[ADR 0002](./adr/0002-rds-multi-az.md).
 
 ### Auto-réparation

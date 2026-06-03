@@ -1,10 +1,10 @@
 # =============================================================================
-# Image applicative — build multi-stage, exécution en utilisateur non-root.
+# Image applicative, build multi-stage, exécution en utilisateur non-root.
 # Tier applicatif déployé sur ECS Fargate.
 # =============================================================================
 
 # -----------------------------------------------------------------------------
-# Étape 1 : builder — installe les dépendances dans un préfixe isolé.
+# Étape 1 : builder, installe les dépendances dans un préfixe isolé.
 # -----------------------------------------------------------------------------
 FROM python:3.12-slim AS builder
 
@@ -27,7 +27,7 @@ COPY requirements.txt .
 RUN pip install --prefix=/install -r requirements.txt
 
 # -----------------------------------------------------------------------------
-# Étape 2 : runtime — image minimale, sans outils de build, non-root.
+# Étape 2 : runtime, image minimale, sans outils de build, non-root.
 # -----------------------------------------------------------------------------
 FROM python:3.12-slim AS runtime
 
@@ -57,5 +57,5 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
     CMD python -c "import urllib.request,sys; sys.exit(0) if urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2).status==200 else sys.exit(1)"
 
-# Gunicorn : 2 workers, 4 threads — adapté à 0.25 vCPU / 512 Mo.
+# Gunicorn : 2 workers, 4 threads, adapté à 0.25 vCPU / 512 Mo.
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "--threads", "4", "--timeout", "30", "--access-logfile", "-", "app:app"]
