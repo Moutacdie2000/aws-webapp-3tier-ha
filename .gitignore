@@ -1,0 +1,41 @@
+# --- Terraform ---
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+# Variables locales potentiellement sensibles (l'exemple, lui, est versionné).
+terraform.tfvars
+*.auto.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraform.lock.hcl
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+env/
+
+# --- Docker ---
+*.pid
+
+# --- Secrets & identifiants (ne jamais committer) ---
+*.pem
+*.key
+.env
+.env.*
+!.env.example
+
+# --- IDE / OS ---
+.idea/
+.vscode/
+*.swp
+.DS_Store
